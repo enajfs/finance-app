@@ -7,11 +7,7 @@ app = FastAPI(title="Finance App API", version="1.0.0")
 # CORS must be added before routers
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://finance-app-six-sandy.vercel.app",
-        "https://finance-app-git-main-enajfreelance-7422s-projects.vercel.app",
-    ],
+   allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
