@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTheme } from '../context/ThemeContext'
 import { useApiClient } from '../api/client'
 import { categoriesApi } from '../api/categories'
-import { Card, Modal, Input, Select, Btn, Spinner, EmptyState, TypeToggle } from '../components/ui'
+import { Modal, Input, Btn, Spinner, EmptyState, TypeToggle } from '../components/ui'
 import type { Category, CategoryType } from '../types'
 
 const ICON_OPTIONS = ['🍜','🚗','🛍️','💡','🎬','💼','💰','🏥','✈️','🏠','📚','🐾','💅','🎮','🏋️','☕','🎁','🍺','💊','🌱']
