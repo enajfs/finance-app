@@ -96,11 +96,22 @@ export default function Wallets() {
       }
 
       <SectionTitle>Summary</SectionTitle>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <MetricCard label="Total PHP" value={fmt(totalPHP)} />
-        <MetricCard label="Wallets" value={wallets.length} />
-      </div>
-
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+  <MetricCard label="Total PHP" value={fmt(isNaN(totalPHP) ? 0 : totalPHP)} />
+  <MetricCard label="Wallets" value={wallets.length} />
+</div>
+{wallets.filter(w => w.currency !== 'PHP').length > 0 && (
+  <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
+    {Object.entries(
+      wallets.filter(w => w.currency !== 'PHP').reduce((acc: Record<string, number>, w) => {
+        acc[w.currency] = (acc[w.currency] || 0) + Number(w.balance)
+        return acc
+      }, {})
+    ).map(([currency, total]) => (
+      <MetricCard key={currency} label={`Total ${currency}`} value={fmt(isNaN(total) ? 0 : total, currency)} />
+    ))}
+  </div>
+)}
       {modal && (
         <Modal title={modal === 'edit' ? 'Edit Wallet' : 'New Wallet'} onClose={closeModal}>
           <Input label="Wallet name" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Main Account" />
