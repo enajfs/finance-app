@@ -53,7 +53,7 @@ export default function Wallets() {
     setWallets(prev => prev.filter(w => w.id !== id))
   }
 
-  const totalPHP = wallets.filter(w => w.currency === 'PHP').reduce((s, w) => s + w.balance, 0)
+  const totalPHP = wallets.filter(w => w.currency === 'PHP').reduce((s, w) => s + Number(w.balance), 0)
   const WALLET_COLORS = [theme.primary, '#16A34A', '#7C3AED', '#EA580C', '#E11D48']
 
   if (loading) return <Spinner />
