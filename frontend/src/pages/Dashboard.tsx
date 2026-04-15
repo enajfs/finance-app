@@ -50,10 +50,11 @@ export default function Dashboard() {
 
   if (loading) return <Spinner />
 
-  const totalPHP = wallets.filter(w => w.currency === 'PHP').reduce((s, w) => s + w.balance, 0)
+  const totalPHP = wallets.filter(w => w.currency === 'PHP').reduce((s, w) => s + Number(w.balance), 0)
+  const phpWallets = wallets.filter(w => w.currency === 'PHP')
+  const otherWallets = wallets.filter(w => w.currency !== 'PHP')
   const PIE_COLORS = [theme.primary, theme.accent, '#94A3B8', '#CBD5E1', '#E2E8F0']
 
-  // Deduplicate balance history to one line (sum per date label)
   const chartData = Object.values(
     balanceHistory.reduce((acc: Record<string, { date: string; balance: number }>, p) => {
       if (!acc[p.date]) acc[p.date] = { date: p.date, balance: 0 }
@@ -67,36 +68,59 @@ export default function Dashboard() {
       {/* Hero header */}
       <div style={{ background: theme.primary, padding: '52px 24px 28px', borderRadius: '0 0 28px 28px', marginBottom: 24 }}>
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', fontWeight: 500, marginBottom: 4 }}>Total Balance (PHP)</div>
-        <div style={{ fontSize: 36, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>{fmt(totalPHP)}</div>
+        <div style={{ fontSize: 36, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>{fmt(isNaN(totalPHP) ? 0 : totalPHP)}</div>
         {summary && (
           <div style={{ display: 'flex', gap: 24, marginTop: 18 }}>
             <div>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 2 }}>Income this month</div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>+{fmt(summary.total_income)}</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>+{fmt(isNaN(summary.total_income) ? 0 : summary.total_income)}</div>
             </div>
             <div>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 2 }}>Expenses this month</div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>-{fmt(summary.total_expense)}</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>-{fmt(isNaN(summary.total_expense) ? 0 : summary.total_expense)}</div>
             </div>
           </div>
         )}
       </div>
 
       <div style={{ padding: '0 16px' }}>
-        {/* Wallet cards */}
-        <SectionTitle>Wallets</SectionTitle>
-        <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4, marginBottom: 20 }}>
-          {wallets.map((w, i) => (
-            <div key={w.id} style={{
-              background: [theme.primary, '#16A34A', '#7C3AED', '#EA580C'][i % 4],
-              borderRadius: 16, padding: '14px 18px', minWidth: 150, flex: '0 0 auto',
-            }}>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginBottom: 4 }}>{w.name}</div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: '#fff' }}>{fmt(w.balance, w.currency)}</div>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>{w.currency}</div>
+        {/* PHP Wallet cards */}
+        {phpWallets.length > 0 && (
+          <>
+            <SectionTitle>PHP Wallets</SectionTitle>
+            <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4, marginBottom: 20 }}>
+              {phpWallets.map((w, i) => (
+                <div key={w.id} style={{
+                  background: [theme.primary, '#16A34A', '#7C3AED', '#EA580C'][i % 4],
+                  borderRadius: 16, padding: '14px 18px', minWidth: 150, flex: '0 0 auto',
+                }}>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginBottom: 4 }}>{w.name}</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#fff' }}>{fmt(w.balance, w.currency)}</div>
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>{w.currency}</div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        )}
+
+        {/* Other Currency Wallet cards */}
+        {otherWallets.length > 0 && (
+          <>
+            <SectionTitle>Other Currencies</SectionTitle>
+            <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4, marginBottom: 20 }}>
+              {otherWallets.map((w, i) => (
+                <div key={w.id} style={{
+                  background: ['#0F766E', '#B45309', '#6D28D9', '#BE123C'][i % 4],
+                  borderRadius: 16, padding: '14px 18px', minWidth: 150, flex: '0 0 auto',
+                }}>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginBottom: 4 }}>{w.name}</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#fff' }}>{fmt(w.balance, w.currency)}</div>
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>{w.currency}</div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Balance over time */}
         {chartData.length > 0 && (
