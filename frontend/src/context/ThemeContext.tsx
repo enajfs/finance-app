@@ -7,6 +7,7 @@ export const THEMES: Record<string, Theme> = {
   royal:  { name: 'Royal Purple',  primary: '#7C3AED', accent: '#8B5CF6', light: '#F5F3FF' },
   sunset: { name: 'Sunset Orange', primary: '#EA580C', accent: '#F97316', light: '#FFF7ED' },
   rose:   { name: 'Rose Pink',     primary: '#E11D48', accent: '#F43F5E', light: '#FFF1F2' },
+  teal:   { name: 'Midnight Teal', primary: '#0D9488', accent: '#14B8A6', light: '#F0FDFA' },
 }
 
 interface ThemeCtx {
