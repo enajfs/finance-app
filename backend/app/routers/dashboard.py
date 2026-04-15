@@ -29,7 +29,12 @@ async def get_summary(
     stmt = (
         select(Transaction.type, func.sum(Transaction.amount).label("total"))
         .join(Wallet, Transaction.wallet_id == Wallet.id)
-        .where(Wallet.user_id == user.id, Transaction.date >= first_day, Transaction.date <= last_day)
+        .where(
+            Wallet.user_id == user.id,
+            Wallet.currency == 'PHP',
+            Transaction.date >= first_day,
+            Transaction.date <= last_day
+        )
         .group_by(Transaction.type)
     )
     result = await db.execute(stmt)
@@ -58,6 +63,7 @@ async def get_by_category(
         .join(Wallet, Transaction.wallet_id == Wallet.id)
         .where(
             Wallet.user_id == user.id,
+            Wallet.currency == 'PHP',
             Transaction.type == TransactionType.expense,
             Transaction.date >= first_day,
             Transaction.date <= last_day,
@@ -73,7 +79,7 @@ async def get_by_category(
 
 @router.get("/balance-history", response_model=list[BalancePoint])
 async def get_balance_history(user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    wallets_result = await db.execute(select(Wallet).where(Wallet.user_id == user.id))
+    wallets_result = await db.execute(select(Wallet).where(Wallet.user_id == user.id, Wallet.currency == 'PHP'))
     wallets = wallets_result.scalars().all()
     points = []
     today = date.today()
